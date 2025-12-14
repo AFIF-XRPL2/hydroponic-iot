@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring Hidroponik</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Light Mode
+                        'bg-light': '#F8FAFC',
+                        'card-light': '#FFFFFF',
+                        'text-primary-light': '#1F2937',
+                        'text-secondary-light': '#6B7280',
+                        
+                        // Dark Mode
+                        'bg-dark': '#0F172A',
+                        'card-dark': '#1E293B',
+                        'text-primary-dark': '#F1F5F9',
+                        'text-secondary-dark': '#94A3B8',
+                        
+                        // Accent Colors
+                        'primary': '#2E7D32',
+                        'primary-light': '#81C784',
+                        'secondary': '#81C784',
+                        
+                        // Status Colors
+                        'status-normal': '#2E7D32',
+                        'status-warning': '#F59E0B',
+                        'status-danger': '#DC2626',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 90px;
+            height: 90px;
+            background: rgba(46, 125, 50, 0.05);
+            border-radius: 50%;
+            transform: translate(35%, -35%);
+        }
+
+        @media (max-width: 640px) {
+            .stat-card::before {
+                display: none;
+            }
+        }
+
+        .theme-toggle {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-bg-light dark:bg-bg-dark transition-colors duration-300">
+<div class="container mx-auto px-4 py-6 max-w-7xl">
+
+     <!-- Header -->
+    <div class="relative bg-card-light dark:bg-card-dark rounded-2xl shadow-lg overflow-hidden mb-6">
+        <!-- Decorative Background Elements -->
+        <div class="absolute inset-0 opacity-5 dark:opacity-10">
+            <div class="absolute top-0 left-0 w-40 h-40 bg-primary rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-60 h-60 bg-secondary rounded-full blur-3xl"></div>
+        </div>
+        
+        <!-- Animated Leaf Pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <i class="fas fa-leaf absolute text-6xl text-primary" style="top: 20%; left: 10%; transform: rotate(-15deg);"></i>
+            <i class="fas fa-seedling absolute text-5xl text-secondary" style="top: 60%; right: 15%; transform: rotate(25deg);"></i>
+            <i class="fas fa-spa absolute text-4xl text-primary-light" style="bottom: 20%; left: 80%; transform: rotate(-30deg);"></i>
+        </div>
+        
+        <div class="relative p-4 md:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <!-- Enhanced Icon with Pulse Animation -->
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-md opacity-50 animate-pulse"></div>
+                    <div class="relative w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-primary via-secondary to-primary-light flex items-center justify-center text-white shadow-xl transform hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-seedling text-xl md:text-3xl"></i>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Title -->
+                <div>
+                    <h1 class="text-xl md:text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent leading-tight">
+                        Dashboard Monitoring
+                    </h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <div class="h-1 w-8 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                        <p class="text-xs md:text-sm font-semibold text-text-secondary-light dark:text-text-secondary-dark tracking-wider uppercase">
+                            Hidroponik IOT
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Theme Toggle Button - FIXED -->
+            <button onclick="toggleTheme()" class="theme-toggle relative w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center text-yellow-500 dark:text-gray-300 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 group">
+                <div class="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                <!-- Ikon Matahari untuk Light Mode -->
+                <i class="fas fa-sun dark:hidden text-xl"></i>
+                <!-- Ikon Bulan untuk Dark Mode -->
+                <i class="fas fa-moon hidden dark:inline text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+
+</div>
+
+    <!-- Stats Section -->
+    <div class="space-y-3 sm:space-y-4 mb-6">
+        
+        <!-- Mobile: Level Air Full Width (only visible on mobile) -->
+        <div class="block lg:hidden">
+            <div class="stat-card bg-card-light dark:bg-card-dark rounded-2xl shadow-lg p-4 relative transition-all">
+                <div class="flex items-center justify-center gap-4">
+                    <div class="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-water text-2xl"></i>
+                    </div>
+                    <div class="flex-1 text-center">
+                        <div class="text-sm text-text-secondary-light dark:text-text-secondary-dark mb-1">Level Air</div>
+                        <div class="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark">
+                            <span id="level-air-mobile">--</span><span class="text-2xl">%</span>
+                        </div>
+                        <div class="text-xs text-status-normal mt-1">✓ Aman</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop/Tablet: Grid Layout -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
+            
+            <!-- Level Air (Desktop/Tablet only) - Memanjang -->
+            <div class="hidden lg:block lg:row-span-2 stat-card bg-card-light dark:bg-card-dark rounded-2xl shadow-lg p-5 relative transition-all">
+                <div class="h-full flex flex-col items-center justify-center">
+                    <div class="w-20 h-20 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                        <i class="fas fa-water text-4xl"></i>
+                    </div>
+                    <div class="text-sm text-text-secondary-light dark:text-text-secondary-dark mb-2">Level Air</div>
+                    <div class="text-5xl font-bold text-text-primary-light dark:text-text-primary-dark">
+                        <span id="level-air-desktop">--</span><span class="text-4xl">%</span>
+                    </div>
+                    <div class="text-sm text-status-normal mt-3">✓ Aman</div>
+                </div>
+            </div>
+
+            <!-- Cahaya -->
+            <div class="stat-card bg-card-light dark:bg-card-dark rounded-2xl shadow-lg p-3 sm:p-5 text-center relative transition-all">
+                <div class="w-10 h-10 sm:w-14 sm:h-14 mx-auto rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-2 sm:mb-3">
+                    <i class="fas fa-sun text-lg sm:text-2xl"></i>
+                </div>
+                <div class="text-xs sm:text-sm text-text-secondary-light dark:text-text-secondary-dark mb-1">Cahaya</div>
+                <div class="text-2xl sm:text-3xl font-bold text-text-primary-light dark:text-text-primary-dark">
+                    <span id="cahaya">--</span><span class="text-base sm:text-lg font-normal"> Lux</span>
+                </div>
+                <div class="text-[11px] sm:text-xs text-status-normal mt-1">✓ Baik</div>
+            </div>
+
+            <!-- Nutrisi -->
+            <div class="stat-card bg-card-light dark:bg-card-dark rounded-2xl shadow-lg p-3 sm:p-5 text-center relative transition-all">
+                <div class="w-10 h-10 sm:w-14 sm:h-14 mx-auto rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-2 sm:mb-3">
+                    <i class="fas fa-vial text-lg sm:text-2xl"></i>
+                </div>
+                <div class="text-xs sm:text-sm text-text-secondary-light dark:text-text-secondary-dark mb-1">Nutrisi</div>
+                <div class="text-2xl sm:text-3xl font-bold text-text-primary-light dark:text-text-primary-dark">
+                    <span id="nutrisi">--</span><span class="text-base sm:text-lg font-normal"> PPM</span>
+                </div>
+                <div class="text-[11px] sm:text-xs text-status-normal mt-1">✓ Optimal</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <!-- Activity Log -->
+        <div class="bg-card-light dark:bg-card-dark rounded-2xl shadow-lg p-5 md:p-6">
+            <h3 class="text-lg md:text-xl font-semibold text-text-primary-light dark:text-text-primary-dark mb-5">Log Aktivitas & Alert</h3>
+            <div class="space-y-3">
+                <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border-l-4 border-primary">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white flex-shrink-0">
+                        <i class="fas fa-pump-medical"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm md:text-base font-semibold text-text-primary-light dark:text-text-primary-dark">Pompa Nutrisi Aktif</div>
+                        <div class="text-xs md:text-sm text-text-secondary-light dark:text-text-secondary-dark mt-1">15 menit yang lalu</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border-l-4 border-primary">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white flex-shrink-0">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm md:text-base font-semibold text-text-primary-light dark:text-text-primary-dark">Grow Light Menyala</div>
+                        <div class="text-xs md:text-sm text-text-secondary-light dark:text-text-secondary-dark mt-1">2 jam yang lalu</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border-l-4 border-status-warning">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-status-warning to-orange-500 flex items-center justify-center text-white flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm md:text-base font-semibold text-text-primary-light dark:text-text-primary-dark">Perhatian: Level Air Rendah - Bed A3</div>
+                        <div class="text-xs md:text-sm text-text-secondary-light dark:text-text-secondary-dark mt-1">3 jam yang lalu</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border-l-4 border-status-normal">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-status-normal to-secondary flex items-center justify-center text-white flex-shrink-0">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm md:text-base font-semibold text-text-primary-light dark:text-text-primary-dark">Suhu Normal Kembali</div>
+                        <div class="text-xs md:text-sm text-text-secondary-light dark:text-text-secondary-dark mt-1">5 jam yang lalu</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bed Tanaman -->
+        <div class="bg-card-light dark:bg-card-dark rounded-2xl shadow-lg p-5 md:p-6">
+            <h3 class="text-lg md:text-xl font-semibold text-text-primary-light dark:text-text-primary-dark mb-5">Kondisi Bed Tanaman</h3>
+            <div class="grid grid-cols-3 gap-3 md:gap-4">
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center transition-all duration-300 hover:bg-primary hover:text-white hover:scale-105 cursor-pointer group">
+                    <div class="text-xl md:text-2xl font-bold mb-2 text-text-primary-light dark:text-text-primary-dark group-hover:text-white">A1</div>
+                    <div class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-status-normal dark:text-green-300 rounded-full inline-block group-hover:bg-white group-hover:text-primary">● Sehat</div>
+                </div>
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center transition-all duration-300 hover:bg-primary hover:text-white hover:scale-105 cursor-pointer group">
+                    <div class="text-xl md:text-2xl font-bold mb-2 text-text-primary-light dark:text-text-primary-dark group-hover:text-white">A2</div>
+                    <div class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-status-normal dark:text-green-300 rounded-full inline-block group-hover:bg-white group-hover:text-primary">● Sehat</div>
+                </div>
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center transition-all duration-300 hover:bg-primary hover:text-white hover:scale-105 cursor-pointer group">
+                    <div class="text-xl md:text-2xl font-bold mb-2 text-text-primary-light dark:text-text-primary-dark group-hover:text-white">A3</div>
+                    <div class="text-xs px-2 py-1 bg-yellow-100 dark:bg-yellow-900 text-status-warning dark:text-yellow-300 rounded-full inline-block group-hover:bg-white group-hover:text-status-warning">⚠ Perhatian</div>
+                </div>
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center transition-all duration-300 hover:bg-primary hover:text-white hover:scale-105 cursor-pointer group">
+                    <div class="text-xl md:text-2xl font-bold mb-2 text-text-primary-light dark:text-text-primary-dark group-hover:text-white">B1</div>
+                    <div class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-status-normal dark:text-green-300 rounded-full inline-block group-hover:bg-white group-hover:text-primary">● Sehat</div>
+                </div>
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center transition-all duration-300 hover:bg-primary hover:text-white hover:scale-105 cursor-pointer group">
+                    <div class="text-xl md:text-2xl font-bold mb-2 text-text-primary-light dark:text-text-primary-dark group-hover:text-white">B2</div>
+                    <div class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-status-normal dark:text-green-300 rounded-full inline-block group-hover:bg-white group-hover:text-primary">● Sehat</div>
+                </div>
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center transition-all duration-300 hover:bg-primary hover:text-white hover:scale-105 cursor-pointer group">
+                    <div class="text-xl md:text-2xl font-bold mb-2 text-text-primary-light dark:text-text-primary-dark group-hover:text-white">B3</div>
+                    <div class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-status-normal dark:text-green-300 rounded-full inline-block group-hover:bg-white group-hover:text-primary">● Sehat</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+<script>
+    // Check for saved theme preference or default to light mode
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+
+    function toggleTheme() {
+        document.documentElement.classList.toggle('dark');
+        
+        // Save preference
+        const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        localStorage.setItem('theme', theme);
+    }
+
+   
+
+
+        //socket io IOT
+       const socket = io("http://localhost:3000");
+
+  socket.on("connect", () => {
+    console.log("Frontend terhubung ke backend");
+  });
+
+  socket.on("sensor_update", (data) => {
+    console.log("Data realtime:", data);
+
+    // LEVEL AIR
+    document.getElementById("level-air-mobile").innerText = data.level_air;
+    document.getElementById("level-air-desktop").innerText = data.level_air;
+
+    // NUTRISI
+    document.getElementById("nutrisi").innerText = data.nutrisi;
+
+    // CAHAYA
+    document.getElementById("cahaya").innerText = data.cahaya;
+
+    
+  });
+
+</script>
+
+
+</body>
+</html>
